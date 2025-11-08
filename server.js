@@ -41,22 +41,28 @@ db.serialize(() => {
         `INSERT INTO users (username, password, subscription_level) VALUES (?, ?, ?)`,
         ['testuser', hashedPassword, 1] //test user with subscription level 1
     );
-    //Lets add a test content key
-    db.run(
-        `INSERT INTO content_keys(content_id, encryption_key, encryption_iv, required_subscription_level) VALUES (?, ?, ?, ?)`,
-        ['video1', '012345', 'abcdef', 1] //test content with required subscription level 1
-    );
-        // Authentication with middleware
-        function authenticateToken(req, res, next) {
-            const authHeader = req.headers['authorization'];
-            const token = authHeader && authHeader.split(' ')[1];// Bearer TOKEN
-            if (!token) return res.sendStatus(401).json({ message: 'The access token is required' });// No token provided
-            jwt.verify(token, JWT_SECRET, (err, user) => { //function to verify token
-                if (err) return res.sendStatus(403).json({ message: 'Invalid access token' });// Invalid token
-                req.user = user;
-                next();
-            });
-        }
+        //Lets add a test content key
+        db.run(
+            `INSERT INTO content_keys(content_id, encryption_key, encryption_iv, required_subscription_level) VALUES (?, ?, ?, ?)`,
+            ['video1', '012345', 'abcdef', 1] //test content with required subscription level 1
+        );
+    }); // Close db.serialize
+    
+    // Authentication with middleware
+    function authenticateToken(req, res, next) {
+        const authHeader = req.headers['authorization'];
+        const token = authHeader && authHeader.split(' ')[1];// Bearer TOKEN
+        if (!token) return res.sendStatus(401).json({ message: 'The access token is required' });// No token provided
+        jwt.verify(token, JWT_SECRET, (err, user) => { //function to verify token
+            if (err) return res.sendStatus(403).json({ message: 'Invalid access token' });// Invalid token
+            req.user = user;
+            next();
+        });
+    }
+    
+    app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+    });
         //route to handle user login and token generation
         app.post('/api/login', (req, res) => {
             const { username, password } = req.body;
