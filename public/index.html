@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple DRM Demo</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .login-form { margin-bottom: 20px; padding: 20px; border: 1px solid #ddd; }
+        .video-container { margin-top: 20px; }
+        video { width: 100%; max-width: 800px; }
+        .hidden { display: none; }
+        .error { color: red; }
+        .success { color: green; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Simple DRM System Demo</h1>
+        
+        <div id="loginForm" class="login-form">
+            <h3>Login</h3>
+            <form id="loginFormElement">
+                <input type="text" id="username" placeholder="Username" value="testuser">
+                <input type="password" id="password" placeholder="Password" value="password123">
+                <button type="submit">Login</button>
+            </form>
+            <div id="loginMessage"></div>
+        </div>
+        
+        <div id="contentArea" class="hidden">
+            <h3>Welcome, <span id="userName"></span>!</h3>
+            <button onclick="getLicense()">Get Video License</button>
+            <button onclick="logout()">Logout</button>
+            
+            <div class="video-container">
+                <video id="videoPlayer" controls class="hidden">
+                    Your browser does not support the video tag.
+                </video>
+                <div id="videoMessage"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="client.js"></script>
+</body>
+</html>
