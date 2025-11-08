@@ -57,6 +57,39 @@ db.serialize(() => {
                 next();
             });
         }
-        
+        //route to handle user login and token generation
+        app.post('/api/login', (req, res) => {
+            const { username, password } = req.body;
 
+            db.get(`select * from users where username = ?`, [username], (err, user) => {
+                if (err || !user){
+                  return res.status(401).json({ message: 'Invalid credentials' }); 
+                }
+                if (bcrypt.compareSync(password, user.password)) {// Passwords match
+                    const token = jwt.sign( //token generation
+                        { id: user.id, username: user.username, subscription_level: user.subscription_level }, 
+                        JWT_SECRET, 
+                        { expiresIn: '1h' }); //expire in 1 hour
+                    return res.json({ token });
+                } else {
+                    return res.status(401).json({ message: 'Invalid credentials' });
+                }
+            });
+        });
+        app.post('/api/license', authenticateToken, (req, res) => {
+    const { contentId } = req.body;
+    
+    if (!contentId) {
+        return res.status(400).json({ error: 'Content ID required' });
+    }
+    db.get(
+        `SELECT * FROM content_keys WHERE content_id = ?`,
+        [contentId],
+        (err, content) => {
+            if (err || !content) {
+                return res.status(404).json({ error: 'Content not found' });
+            }
+            
+            
+        );
     });
