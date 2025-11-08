@@ -90,6 +90,16 @@ db.serialize(() => {
                 return res.status(404).json({ error: 'Content not found' });
             }
             
-            
+            // Check if user has required subscription level
+            if (req.user.subscription < content.required_subscription) {
+                return res.status(403).json({ error: 'Insufficient subscription level' });
+            }
+                res.json({// Provide license details
+                    contentId: content.content_id,
+                    key: content.encryption_key,
+                    iv: content.encryption_iv,
+                    expiration: Date.now() + (60 * 60 * 1000) // 1 hour
+                });
+            }
         );
     });
