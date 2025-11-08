@@ -1,18 +1,14 @@
-{
+﻿{
   "name": "simple-drm-project",
   "version": "1.0.0",
   "description": "A proof-of-concept DRM system for educational purposes",
-  "main": "src/index.js",
+  "main": "src/server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js",
-    "encrypt": "node encrypt-video.js",
-    "test-video": "node create-test-video.js",
-    "init": "node index.js"
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "encrypt": "node test-video-encryption.js",
+    "test": "echo \"No tests yet\" && exit 0"
   },
-  "keywords": ["drm", "encryption", "video", "education"],
-  "author": "MawiraVictor",
-  "license": "MIT",
   "dependencies": {
     "express": "^4.18.2",
     "crypto-js": "^4.1.1",
@@ -21,7 +17,6 @@
     "sqlite3": "^5.1.6"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1",
-    "jest": "^29.6.2"
+    "nodemon": "^3.0.1"
   }
 }
