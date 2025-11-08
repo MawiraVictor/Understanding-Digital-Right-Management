@@ -1,54 +1,24 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
-const sqlite3 = require("sqlite3").verbose();
 const path = require("path");
-const fs = require("fs");
 const SimpleDB = require('./database/simple-db');
-const db = new SimpleDB().getDB();
 
 const app = express();
 const PORT = 3001;
-const JWT_SECRET = "your-secret-key-change-in-production";
+const JWT_SECRET = "your-super-secure-jwt-secret-key-for-drm-system-2024";
 
+// Initialize database
+const simpleDB = new SimpleDB();
+const db = simpleDB.getDB();
+
+// Middleware - MUST come first
 app.use(express.json());
-app.use(express.static("public"));
 
-// Initialize SQLite database
-const db = new sqlite3.Database(':memory:');
-
-// Initialize database with test data
-db.serialize(() => {
-    db.run(`
-        CREATE TABLE users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT UNIQUE,
-            password TEXT,
-            subscription_level INTEGER DEFAULT 0
-        )
-    `);
-    
-    db.run(`
-        CREATE TABLE content_keys (
-            content_id TEXT PRIMARY KEY,
-            encryption_key TEXT,
-            encryption_iv TEXT,
-            required_subscription INTEGER DEFAULT 0
-        )
-    `);
-    
-    // Add test user
-    const hashedPassword = bcrypt.hashSync("password123", 10);
-    db.run(
-        `INSERT INTO users (username, password, subscription_level) VALUES (?, ?, ?)`,
-        ["testuser", hashedPassword, 1]
-    );
-    
-    // Add test content key
-    db.run(
-        `INSERT INTO content_keys (content_id, encryption_key, encryption_iv, required_subscription) VALUES (?, ?, ?, ?)`,
-        ["video1", "test-key-123", "test-iv-456", 1]
-    );
+// Debug middleware to log all requests
+app.use((req, res, next) => {
+    console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+    next();
 });
 
 // Authentication middleware
@@ -69,56 +39,66 @@ function authenticateToken(req, res, next) {
     });
 }
 
-// Routes
+// API ROUTES - THESE MUST COME BEFORE STATIC FILES
 app.post('/api/login', (req, res) => {
+    console.log("Login request:", req.body);
+    
     const { username, password } = req.body;
     
+    if (!username || !password) {
+        return res.status(400).json({ error: 'Username and password required' });
+    }
+    
     db.get('SELECT * FROM users WHERE username = ?', [username], (err, user) => {
-        if (err || !user) {
+        if (err) {
+            console.error('Database error:', err);
+            return res.status(500).json({ error: 'Server error' });
+        }
+        
+        if (!user) {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
-        // Validate password from database
-        if (bcrypt.compareSync(password, user.password)) {
+        
+        if (bcrypt.compareSync(password, user.password_hash)) {
             const token = jwt.sign(
-                { id: user.id, username: user.username, subscription: user.subscription_level },
+                { id: user.id, username: user.username },
                 JWT_SECRET,
                 { expiresIn: '1h' }
             );
             
+            console.log("Login successful for:", username);
             res.json({ 
                 token, 
                 user: { 
                     id: user.id, 
-                    username: user.username,
-                    subscription: user.subscription_level 
+                    username: user.username
                 } 
             });
         } else {
+            console.log("Login failed for:", username);
             res.status(401).json({ error: 'Invalid credentials' });
         }
     });
 });
-// License issuance route
+
 app.post('/api/license', authenticateToken, (req, res) => {
+    console.log("License request from user:", req.user.username);
+    
     const { contentId } = req.body;
     
     if (!contentId) {
         return res.status(400).json({ error: 'Content ID required' });
     }
     
-    db.get(//get content key and check subscription level
+    db.get(
         `SELECT * FROM content_keys WHERE content_id = ?`,
         [contentId],
-        (err, content) => {//   issue license if user has sufficient subscription
+        (err, content) => {
             if (err || !content) {
                 return res.status(404).json({ error: 'Content not found' });
             }
             
-            if (req.user.subscription < content.required_subscription) {
-                return res.status(403).json({ error: 'Insufficient subscription level' });
-            }
-            
-            res.json({//issue license to user
+            res.json({
                 contentId: content.content_id,
                 key: content.encryption_key,
                 iv: content.encryption_iv,
@@ -128,12 +108,26 @@ app.post('/api/license', authenticateToken, (req, res) => {
     );
 });
 
-// Serve the main page
+// STATIC FILES - MUST COME AFTER API ROUTES
+app.use(express.static("public"));
+
+// Default route - should be last
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
-app.listen(PORT, () => {
-    console.log("DRM Server running on http://localhost:" + PORT);
-    console.log(" Test credentials: username=testuser, password=password123");
+// 404 handler for API routes
+app.use('/api/*', (req, res) => {
+    res.status(404).json({ error: 'API endpoint not found' });
+});
+
+// Start server only after database is ready
+simpleDB.init(() => {
+    app.listen(PORT, () => {
+        console.log("🚀 DRM Server running on http://localhost:" + PORT);
+        console.log("👤 Test credentials: username=testuser, password=password123");
+        console.log("📡 API endpoints:");
+        console.log("   POST /api/login");
+        console.log("   POST /api/license");
+    });
 });

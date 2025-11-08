@@ -1,4 +1,4 @@
-let authToken = null;
+﻿let authToken = null;
 let currentUser = null;
 
 // DOM elements
@@ -20,6 +20,13 @@ document.getElementById('loginFormElement').addEventListener('submit', async (e)
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, password })
         });
+        
+        // Check if response is JSON
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            const text = await response.text();
+            throw new Error('Server returned HTML instead of JSON. Check if API route exists.');
+        }
         
         const data = await response.json();
         
@@ -62,29 +69,22 @@ async function getLicense() {
         const license = await response.json();
         
         if (response.ok) {
-            showMessage('License acquired! Now playing video...', 'success');
+            showMessage('License acquired! Loading video...', 'success');
             
-            // In a real implementation, you'd use EME here
-            // For this demo, we'll just show a success message
-            simulateVideoPlayback(license);
+            // Show the video player
+            videoPlayer.innerHTML = `
+                <video controls width="100%">
+                    <source src="/video.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            `;
+            videoPlayer.classList.remove('hidden');
         } else {
             showMessage('License request failed: ' + license.error, 'error');
         }
     } catch (error) {
         showMessage('License request failed: ' + error.message, 'error');
     }
-}
-
-function simulateVideoPlayback(license) {
-    videoMessage.innerHTML = `
-        <div class="success">
-            <h4>Video playback simulation</h4>
-            <p>License acquired for content: ${license.contentId}</p>
-            <p>Key: ${license.key.substring(0, 20)}...</p>
-            <p>Expires: ${new Date(license.expiration).toLocaleString()}</p>
-            <p>In a real implementation, the video would now play using EME.</p>
-        </div>
-    `;
 }
 
 function logout() {
@@ -97,9 +97,6 @@ function logout() {
 }
 
 function showMessage(message, type) {
-    const element = type === 'login' ? 
-        document.getElementById('loginMessage') : videoMessage;
-    
+    const element = document.getElementById('loginMessage');
     element.innerHTML = `<div class="${type}">${message}</div>`;
-    setTimeout(() => element.innerHTML = '', 5000);
 }
