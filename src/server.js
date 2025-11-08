@@ -4,9 +4,11 @@ const bcrypt = require("bcryptjs");
 const sqlite3 = require("sqlite3").verbose();
 const path = require("path");
 const fs = require("fs");
+const SimpleDB = require('./database/simple-db');
+const db = new SimpleDB().getDB();
 
 const app = express();
-const PORT = 3000;
+const PORT = 3001;
 const JWT_SECRET = "your-secret-key-change-in-production";
 
 app.use(express.json());
