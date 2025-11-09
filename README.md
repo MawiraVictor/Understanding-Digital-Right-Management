@@ -2,16 +2,16 @@
 
 # Simple DRM System
 
-A proof-of-concept Digital Rights Management system for educational purposes that demonstrates secure video content protection using modern encryption standards and authentication mechanisms.
+Used this project to understand cryptographic concepts and how they apply in Digital Rights Management system for educational purposes that demonstrates secure video content protection using modern encryption standards and authentication mechanisms.
 
 ## Features
 
-- Video encryption/decryption using AES-256-CBC
+- Video encryption/decryption using AES-256-CBC -> (Codeblockchaining)
 - Secure license server with JWT-based authentication
 - Role-based content access control
 - Web-based video player interface with secure playback
 - SQLite database for user management
-- Real-time request logging and monitoring
+
 
 ## Technology Stack
 
@@ -25,31 +25,26 @@ A proof-of-concept Digital Rights Management system for educational purposes tha
 
 1. Clone the repository and install dependencies:
    \`\`\`bash
-   git clone <repository-url>
-   cd simple-drm-project
-   npm install
+
+   *git clone <repository-url>
+   *cd simple-drm-project
+   *npm install
    \`\`\`
 
-2. Create a test video file:
-   \`\`\`bash
-   node create-test-video.js
-   # This will create test-input.mp4 in the project root
-   # Alternatively, place your own MP4 file named test-input.mp4
-   \`\`\`
 
-3. Set up the database and encrypt the test video:
+2. Set up the database and encrypt the test video:
    \`\`\`bash
    node setup-video.js
    # This initializes the SQLite database and encrypts the test video
    \`\`\`
 
-4. Start the development server:
+3. Start the development server:
    \`\`\`bash
    npm run dev
    # For production: npm start
    \`\`\`
 
-5. Access the application:
+4. Access the application:
    - Open http://localhost:3001 in your browser
    - The server includes request logging for debugging
 
@@ -68,14 +63,14 @@ A proof-of-concept Digital Rights Management system for educational purposes tha
 ## Project Structure
 
 \`\`\`
-simple-drm-project/
-├── src/
-│   ├── server.js           # Main Express server
-│   ├── database/           # Database setup and queries
-│   └── encryption/         # Video encryption utilities
-├── public/                 # Static frontend files
-├── scripts/               # Utility scripts
-└── crypto-basics/         # Core cryptography implementations
+*simple-drm-project/
+ ├── src/
+ │   ├── server.js           # Main Express server
+ │   ├── database/           # Database setup and queries
+ │   └── encryption/         # Video encryption utilities
+ ├── public/                 # Static frontend files
+ ├── scripts/               # Utility scripts
+ └── crypto-basics/         # Core cryptography implementations
 \`\`\`
 
 ## Security Notice
