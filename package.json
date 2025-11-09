@@ -1,7 +1,7 @@
 ﻿{
   "name": "simple-drm-project",
   "version": "1.0.0",
-  "description": "A proof-of-concept DRM system for educational purposes",
+  "description": "A simple DRM system for educational purposes and  proof-of-concept of  cryptographic primitives through the  DRM system ",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
