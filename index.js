@@ -1,5 +1,5 @@
-const videoEncryptor = require('./video-encryptor');
-const server = require('./server');
+//const videoEncryptor = require('./video-encryptor');
+const server = require('./src/server.js');
 // Simple DRM Project Entry Point
 
 async function iniitializeProject() {
