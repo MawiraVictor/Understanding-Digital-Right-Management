@@ -20,8 +20,8 @@
         }
 
         .container {
-            max-width: 800px;
-            margin: 0 auto;
+            max-width: 400px;
+            margin: 50px auto;
         }
 
         .header {
@@ -126,6 +126,22 @@
             font-family: monospace;
             font-size: 14px;
         }
+
+        .register-link {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #444;
+        }
+
+        .register-link a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -135,7 +151,8 @@
             <p>Digital Rights Management Demo</p>
         </div>
 
-        <div id="loginForm" class="card">
+        <!-- FIXED: Changed id from "loginForm" to "loginCard" to avoid conflict -->
+        <div id="loginCard" class="card">
             <h3>Login</h3>
             <form id="loginFormElement">
                 <div class="form-group">
@@ -149,8 +166,14 @@
                 <button type="submit">Login</button>
             </form>
             <div id="loginMessage"></div>
+            
+            <!-- Registration Link -->
+            <div class="register-link">
+                <p>Don't have an account? <a href="/register">Register here</a></p>
+            </div>
         </div>
-        
+         
+    
         <div id="contentArea" class="hidden">
             <div class="user-info">
                 <div>
