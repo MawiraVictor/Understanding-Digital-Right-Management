@@ -64,30 +64,13 @@ Used this project to understand cryptographic concepts and how they apply in Dig
 
 \`\`\`
 *simple-drm-project/
-
  ├── src/
-
- │   ├── server.js           # Main Express 
-
- server
-
- │   ├── database/           # Database 
-
- setup and queries
-
- │   └── encryption/         # Video 
-
- encryption utilities
-
- ├── public/                 # Static 
-
- frontend files
-
+ │   ├── server.js           # Main Express server
+ │   ├── database/           # Database setup and queries
+ │   └── encryption/         # Video encryption utilities
+ ├── public/                 # Static frontend files
  ├── scripts/               # Utility scripts
-
- └── crypto-basics/         # Core 
- 
- cryptography implementations
+ └── crypto-basics/         # Core cryptography implementations
 \`\`\`
 
 
